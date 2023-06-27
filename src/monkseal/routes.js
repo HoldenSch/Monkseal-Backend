@@ -8,5 +8,6 @@ router.post("/", controller.addSeal);
 router.get("/:id", controller.getSealById);
 router.put("/:id", controller.updateSeal);
 router.delete("/:id", controller.removeSeal);
+router.post("/find", controller.findSeal);
 
 module.exports = router;

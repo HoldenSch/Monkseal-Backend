@@ -1,5 +1,6 @@
 const pool = require("../../db");
 const queries = require("./queries");
+const { head } = require("./routes");
 
 const getMonkseals = (req, res) => {
     pool.query(queries.getMonkseals, (error, results) => {
@@ -65,6 +66,64 @@ const updateSeal = (req, res) => {
     });
 };
 
+const findSeal = (req, res) => {
+    const { sealid, name, size, sex, headscar } = req.body;
+    
+    // Build an array to hold the search parameters
+    const searchParams = [];
+    let searchQuery = 'SELECT * FROM accounts WHERE';
+    
+    // Check if seal ID is provided
+    if (sealid) {
+      searchParams.push(sealid);
+      searchQuery += ' sealid = $' + searchParams.length + ' AND';
+    }
+    
+    // Check if name is provided
+    if (name) {
+      searchParams.push(name);
+      searchQuery += ' name = $' + searchParams.length + ' AND';
+    }
+    
+    // Check if size is provided
+    if (size) {
+      searchParams.push(size);
+      searchQuery += ' size = $' + searchParams.length + ' AND';
+    }
+    
+    // Check if sex is provided
+    if (sex) {
+      searchParams.push(sex);
+      searchQuery += ' sex = $' + searchParams.length + ' AND';
+    }
+    
+    // Check if headscar is provided
+    if (headscar) {
+      searchParams.push(headscar);
+      searchQuery += ' headscar = $' + searchParams.length + ' AND';
+    }
+    
+    // Remove the trailing 'AND' from the query
+    searchQuery = searchQuery.slice(0, -4);
+    
+    // Check if any search parameters were provided
+    if (searchParams.length === 0) {
+      res.send("No search parameters provided.");
+      return;
+    }
+    
+    // Find seals based on search parameters
+    pool.query(searchQuery, searchParams, (error, results) => {
+      if (error) {
+        console.error('Error finding seals:', error);
+        res.status(500).send("An error occurred while finding seals.");
+      } else {
+        res.status(200).send(results.rows);
+      }
+    });
+  };
+
+
 
 module.exports = {
     getMonkseals,
@@ -72,4 +131,5 @@ module.exports = {
     addSeal,
     removeSeal,
     updateSeal,
+    findSeal,
 };

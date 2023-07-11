@@ -1,10 +1,18 @@
 const express = require('express');
-const monksealRoutes = require('./src/monkseal/routes');
+const cors = require("cors");
+const monksealRoutes = require('./src/monkseal/routes');""
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors({ origin: true }));
+
+app.get('/products/:id', function (req, res, next) {
+    res.json({msg: 'This is CORS-enabled for all origins!'})
+  })
+
+
 
 app.get("/", (req, res) => {
     res.send('Hello World!!');
